@@ -81,8 +81,47 @@
      */
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
 
-    // Fire off an asynchronous task, giving UIKit the opportunity to redraw wit the HUD added to the
+    // Fire off（fire off发射、熄火） an asynchronous task, giving UIKit the opportunity to redraw wit the HUD added to the
     // view hierarchy.
+    
+    /* lzy注170818：
+     qos_class_t 是一种枚举，有以下类型：
+     QOS_CLASS_USER_INTERACTIVE： user interactive 等级表示任务需要被立即执行，用来在响应事件之后更新 UI，来提供好的用户体验。这个等级最好保持小规模。
+     QOS_CLASS_USER_INITIATED： user initiated(开始、发起、开创) 等级表示任务由 UI 发起异步执行。适用场景是需要及时结果同时又可以继续交互的时候。
+     QOS_CLASS_DEFAULT： default 默认优先级
+     QOS_CLASS_UTILITY： utility 等级表示需要长时间运行的任务，伴有用户可见进度指示器。经常会用来做计算，I/O，网络，持续的数据填充等任务。这个任务节能。
+     QOS_CLASS_BACKGROUND： background 等级表示用户不会察觉的任务，使用它来处理预加载，或者不需要用户交互和对时间不敏感的任务。
+     QOS_CLASS_UNSPECIFIED： unspecified 未指明
+     
+     作者：edison0428
+     链接：http://www.jianshu.com/p/ef7d760d36b3
+     來源：简书
+     著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+     
+     
+     // 全局并行队列
+     dispatch_get_global_queue
+     long identifier：ios 8.0 告诉队列执行任务的“服务质量 quality of service”，系统提供的参数有：
+     QOS_CLASS_USER_INTERACTIVE 0x21,              用户交互(希望尽快完成，用户对结果很期望，不要放太耗时操作)
+     QOS_CLASS_USER_INITIATED 0x19,                用户期望(不要放太耗时操作)
+     QOS_CLASS_DEFAULT 0x15,                        默认(不是给程序员使用的，用来重置对列使用的)
+     QOS_CLASS_UTILITY 0x11,                        实用工具(耗时操作，可以使用这个选项)
+     QOS_CLASS_BACKGROUND 0x09,                     后台
+     QOS_CLASS_UNSPECIFIED 0x00,                    未指定
+     iOS 7.0 之前 优先级
+     DISPATCH_QUEUE_PRIORITY_HIGH 2                 高优先级
+     DISPATCH_QUEUE_PRIORITY_DEFAULT 0              默认优先级
+     DISPATCH_QUEUE_PRIORITY_LOW (-2)               低优先级
+     DISPATCH_QUEUE_PRIORITY_BACKGROUND INT16_MIN  后台优先级
+     // 获取默认优先级的全局并行队列，这里dispatch_get_global_queue的第一个参数为优先级，第二个参数是苹果为未来预留的参数，这里默认写0就可以了
+     dispatch_queue_t globalQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
+     
+     作者：ivan_丁丁丁
+     链接：http://www.jianshu.com/p/99937c061451
+     來源：简书
+     著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+     
+     */
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
 
@@ -92,6 +131,12 @@
         // IMPORTANT - Dispatch back to the main thread. Always access UI
         // classes (including MBProgressHUD) on the main thread.
         dispatch_async(dispatch_get_main_queue(), ^{
+            /* lzy注170818：
+             Hides the HUD. This still calls the hudWasHidden: delegate. This is the counterpart(副本、配对、对应的) of the show: method. Use it to hide the HUD when your task completes.
+             Parameters
+             animated
+             If set to YES the HUD will disappear using the current animationType. If set to NO the HUD will not use animations while disappearing.
+             */
             [hud hideAnimated:YES];
         });
     });
@@ -102,9 +147,19 @@
 
     // Set the label text.
     hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");
+    /* lzy注170818：
+    可以继续对UILabel其他属性进行设置。e.g.
+     hud.label.backgroundColor = [UIColor redColor];
+     hud.label.backgroundColor = [UIColor redColor];
+     hud.label.layer.masksToBounds = YES;
+     hud.label.layer.cornerRadius = 5;
+     */
+    
     // You can also adjust other label properties if needed.
     // hud.label.font = [UIFont italicSystemFontOfSize:16.f];
+    
 
+    
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         [self doSomeWork];
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -130,6 +185,10 @@
 }
 
 - (void)windowExample {
+    /* lzy注170818：
+     覆盖整个屏幕。与添加到根视图上的使用方法类似。
+     这里showHUDAddedTo传入的参数是self.view.window
+     */
     // Covers the entire screen. Similar to using the root view controller view.
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view.window animated:YES];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
@@ -141,14 +200,24 @@
 }
 
 - (void)determinateExample {
+    // self.navigationController.view
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
 
-    // Set the determinate mode to show task progress.
+    // Set the determinate(确定的、清楚的) mode to show task progress.
+    /* lzy注170818：
+     hud原来有mode这个属性，是个枚举。
+     
+     Indeterminate不确定的
+     MBProgressHUD operation mode. The default is MBProgressHUDModeIndeterminate.
+     
+     MBProgressHUDModeDeterminate： A round, pie-chart like, progress view.
+     
+     */
     hud.mode = MBProgressHUDModeDeterminate;
     hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        // Do something useful in the background and update the HUD periodically.
+        // Do something useful in the background and update the HUD periodically（周期的）.
         [self doSomeWorkWithProgress];
         dispatch_async(dispatch_get_main_queue(), ^{
             [hud hideAnimated:YES];
@@ -345,8 +414,22 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             // Instead we could have also passed a reference to the HUD
             // to the HUD to myProgressTask as a method parameter.
+            /* lzy注170818：
+             使用类方法，获取对应的视图中的hud实例
+             */
             [MBProgressHUD HUDForView:self.navigationController.view].progress = progress;
         });
+        /* lzy注170818：
+         sleep是线程被调用时，占着cpu去睡觉，其他线程不能占用cpu，os认为该线程正在工作，不会让出系统资源
+         usleep功能把进程挂起一段时间， 单位是微秒（千分之一毫秒），其他与sleep一样。
+         
+         功能与sleep类似，只是传入的参数单位是微妙
+         若想最佳利用cpu，在更小的时间情况下，选择用usleep
+         sleep传入的参数是整形，所以不能传了小数
+         usleep不能工作在windows上，只能在linux下。
+         
+         睡50000微秒之后再继续while循环
+         */
         usleep(50000);
     }
 }
