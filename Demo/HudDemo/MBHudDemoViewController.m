@@ -45,8 +45,13 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    
+    /* lzy注170818：
+     准备数据源。双层数组，外层section，内层row
+     */
     self.examples =
-    @[@[[MBExample exampleWithTitle:@"Indeterminate mode" selector:@selector(indeterminateExample)],
+    @[
+      @[[MBExample exampleWithTitle:@"Indeterminate mode" selector:@selector(indeterminateExample)],
         [MBExample exampleWithTitle:@"With label" selector:@selector(labelExample)],
         [MBExample exampleWithTitle:@"With details label" selector:@selector(detailsLabelExample)]],
       @[[MBExample exampleWithTitle:@"Determinate mode" selector:@selector(determinateExample)],
@@ -69,10 +74,16 @@
 - (void)indeterminateExample {
     // Show the HUD on the root view (self.view is a scrollable table view and thus not suitable,
     // as the HUD would move with the content as we scroll).
+    /* lzy注170818：
+     在根视图上展示HUD。
+     本类是UITableViewController。那么self.view就是table view，它是可滚动的，所以不合适，因为如果self.view滚动它的内容，那么hud作为内容的一部分也会跟着滚动。
+     于是添加到了self.navigationController.view上
+     */
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
 
     // Fire off an asynchronous task, giving UIKit the opportunity to redraw wit the HUD added to the
     // view hierarchy.
+    
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
 
         // Do something useful in the background
