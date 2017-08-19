@@ -102,8 +102,8 @@
 			isa = PBXGroup;
 			children = (
 				D27F18561D3B5DFF009D7482 /* MBHudDemoAppDelegate.h */,
-				D27F18571D3B5DFF009D7482 /* MBHudDemoViewController.h */,
 				D27F18581D3B5DFF009D7482 /* MBHudDemoAppDelegate.m */,
+				D27F18571D3B5DFF009D7482 /* MBHudDemoViewController.h */,
 				D27F18591D3B5DFF009D7482 /* MBHudDemoViewController.m */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,

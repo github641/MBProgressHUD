@@ -35,7 +35,9 @@
 
 
 extern CGFloat const MBProgressMaxOffset;
-
+/* lzy注170819：补充、提取重点
+ 中文总结下：纯文字、不确定指示器、自定义视图、确定指示器、确定指示器水平、确定指示器环形
+ */
 typedef NS_ENUM(NSInteger, MBProgressHUDMode) {
     /// UIActivityIndicatorView.
     MBProgressHUDModeIndeterminate,
@@ -85,10 +87,15 @@ NS_ASSUME_NONNULL_BEGIN
  * @note To still allow touches to pass through the HUD, you can set hud.userInteractionEnabled = NO.
  * @attention MBProgressHUD is a UI class and should therefore only be accessed on the main thread.
  */
+/* lzy注170819：补充、提取重点
+ 1、Apple有一个私有的类 UIProgressHUD，本类和苹果私有类提供了差不多的功能
+ 2、默认MBHUD阻断了所有的用户交互，可以通过设置hud.userInteractionEnabled = NO来启用交互。
+ 3、MBProgressHUD是个视图，所以对它的操作务必在主线程
+ */
 @interface MBProgressHUD : UIView
 
 /**
- * Creates a new HUD, adds it to provided view and shows it. The counterpart to this method is hideHUDForView:animated:.
+ * Creates a new HUD, adds it to provided view and shows it. The counterpart（副本、相似物） to this method is hideHUDForView:animated:.
  *
  * @note This method sets removeFromSuperViewOnHide. The HUD will automatically be removed from the view hierarchy when hidden.
  *
@@ -100,12 +107,16 @@ NS_ASSUME_NONNULL_BEGIN
  * @see hideHUDForView:animated:
  * @see animationType
  */
+/* lzy注170819：补充、提取重点
+ 1、本类的对应方法：hideHUDForView:animated:.
+ 2、如果调用本类的hide方法，那么会调用removeFromSuperViewOnHide。即如果hide本类，那么本类会从父视图移除。
+ */
 + (instancetype)showHUDAddedTo:(UIView *)view animated:(BOOL)animated;
 
 /// @name Showing and hiding
 
 /**
- * Finds the top-most HUD subview that hasn't finished and hides it. The counterpart to this method is showHUDAddedTo:animated:.
+ * Finds the top-most（最顶端的、最前面的） HUD subview that hasn't finished and hides it. The counterpart to this method is showHUDAddedTo:animated:.
  *
  * @note This method sets removeFromSuperViewOnHide. The HUD will automatically be removed from the view hierarchy when hidden.
  *
@@ -134,6 +145,10 @@ NS_ASSUME_NONNULL_BEGIN
  * @param view The view instance that will provide the bounds for the HUD. Should be the same instance as
  * the HUD's superview (i.e., the view that the HUD will be added to).
  */
+/* lzy注170819：补充、提取重点
+ 1、使用传入view的bounds来初始化HUD
+ 2、传入view应该要是HUD的父视图
+ */
 - (instancetype)initWithView:(UIView *)view;
 
 /** 
@@ -147,6 +162,10 @@ NS_ASSUME_NONNULL_BEGIN
  * animations while appearing.
  *
  * @see animationType
+ */
+/* lzy注170819：补充、提取重点
+ 1、为了用户界面可以得到更新，你需要确保，在这个方法被调用的时候，主线程可以立即完成主运行循环。
+ 即调用这个方法的时候，不要在主线程做太多耗时操作
  */
 - (void)showAnimated:(BOOL)animated;
 
@@ -184,11 +203,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (copy, nullable) MBProgressHUDCompletionBlock completionBlock;
 
 /*
- * Grace period is the time (in seconds) that the invoked method may be run without
+ * Grace period（宽限期） is the time (in seconds) that the invoked method may be run without
  * showing the HUD. If the task finishes before the grace time runs out, the HUD will
  * not be shown at all.
  * This may be used to prevent HUD display for very short tasks.
  * Defaults to 0 (no grace time).
+ */
+/* lzy注170819：补充、提取重点
+ 这个宽限期，默认是0秒。立即展示，立即消失。
+ 类似与AFN+UIActivityIndicator中的做法：延迟显示、若任务在延迟时间短结束，指示器不展示；延迟时间结束，任务未结束，展示指示器。一旦展示指示器，至少展示Y时间，即使任务提前结束。
+ 配合下一个属性使用。
  */
 @property (assign, nonatomic) NSTimeInterval graceTime;
 
@@ -229,10 +253,13 @@ NS_ASSUME_NONNULL_BEGIN
  * and -MBProgressMaxOffset to move the HUD all the way to the screen edge in each direction.
  * E.g., CGPointMake(0.f, MBProgressMaxOffset) would position the HUD centered on the bottom edge.
  */
+/* lzy注170819：补充、提取重点
+ 一个坐标。可以在x、y赋值MBProgressMaxOffset和-MBProgressMaxOffset，来将HUD调整到屏幕的各个边缘
+ */
 @property (assign, nonatomic) CGPoint offset UI_APPEARANCE_SELECTOR;
 
 /**
- * The amount of space between the HUD edge and the HUD elements (labels, indicators or custom views).
+ * The amount of space between the HUD edge and the HUD elements (labels, indicators or custom views).HUD最边缘距离HUD内的元素的间距
  * This also represents the minimum bezel distance to the edge of the HUD view.
  * Defaults to 20.f
  */
@@ -251,6 +278,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * When enabled, the bezel center gets slightly affected by the device accelerometer data.
  * Has no effect on iOS < 7.0. Defaults to YES.
+ */
+/* lzy注170819：补充、提取重点
+ 印象最深的是威锋的iOS客户端的登录页中，背景图随手机摆动而动。
+ 这是视差效果，api是view的motionEffects。可以在testRepo找到。
+ HUD居然在细节上有这个效果，赞
  */
 @property (assign, nonatomic, getter=areDefaultMotionEffectsEnabled) BOOL defaultMotionEffectsEnabled UI_APPEARANCE_SELECTOR;
 
