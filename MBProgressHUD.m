@@ -7,7 +7,10 @@
 #import "MBProgressHUD.h"
 #import <tgmath.h>
 
-
+/* lzy注170819：补充、提取重点
+ 定义的Foundation API的版本号。
+ 用于API兼容。
+ */
 #ifndef kCFCoreFoundationVersionNumber_iOS_7_0
     #define kCFCoreFoundationVersionNumber_iOS_7_0 847.20
 #endif
@@ -18,13 +21,21 @@
 
 #define MBMainThreadAssert() NSAssert([NSThread isMainThread], @"MBProgressHUD needs to be accessed on the main thread.");
 
+/* lzy注170819：补充、提取重点
+ 在.h中，是这样写的：
+ extern CGFloat const MBProgressMaxOffset;
+ */
 CGFloat const MBProgressMaxOffset = 1000000.f;
 
 static const CGFloat MBDefaultPadding = 4.f;
 static const CGFloat MBDefaultLabelFontSize = 16.f;
 static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 
-
+/* lzy注170819：补充、提取重点
+ 类扩展。一些.m内部使用的变量。
+ 以及一些需要把.h中的属性的所有权修饰符进行重写，会需要在这里面写。
+ 比如外部是readOnly，内部重写为readWrite。
+ */
 @interface MBProgressHUD () {
     // Deprecated
     UIColor *_activityIndicatorColor;
@@ -77,6 +88,14 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 }
 
 + (MBProgressHUD *)HUDForView:(UIView *)view {
+    /* lzy注170819：补充、提取重点
+     Returns an enumerator object that lets you access each object in the array, in reverse order.
+     When you use this method with mutable subclasses of NSArray, you must not modify the array during enumeration.
+     It is more efficient to use the fast enumeration protocol (see NSFastEnumeration). Fast enumeration is available in macOS 10.5 and later and iOS 2.0 and later.
+     Returns
+     An enumerator object that lets you access each object in the array, in order, from the element at the highest index down to the element at index 0.（访问数组迭代器中的元素，内部元素使用从高到低排的）
+     Availability	iOS (2.0 and later), macOS (10.0 and later), tvOS (9.0 and later), watchOS (2.0 and later)
+     */
     NSEnumerator *subviewsEnum = [view.subviews reverseObjectEnumerator];
     for (UIView *subview in subviewsEnum) {
         if ([subview isKindOfClass:self]) {
@@ -110,8 +129,11 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.layer.allowsGroupOpacity = NO;
 
+    /* lzy注170819：补充、提取重点
+     */
     [self setupViews];
     [self updateIndicators];
+    // 监听屏幕（状态栏）方向
     [self registerForNotifications];
 }
 
@@ -141,14 +163,17 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 #pragma mark - Show & hide
 
 - (void)showAnimated:(BOOL)animated {
+    /* lzy注170819：补充、提取重点
+    这是.m的 Assert宏定义的使用。本类是UI视图类，所以操作本类，务必在主线程。
+     */
     MBMainThreadAssert();
     [self.minShowTimer invalidate];
     self.useAnimation = animated;
     self.finished = NO;
-    // If the grace time is set, postpone the HUD display
+    // If the grace time is set, postpone（延期、延迟） the HUD display
     if (self.graceTime > 0.0) {
         NSTimer *timer = [NSTimer timerWithTimeInterval:self.graceTime target:self selector:@selector(handleGraceTimer:) userInfo:nil repeats:NO];
-        [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+        [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];// mode是runLoop模式集合。
         self.graceTimer = timer;
     } 
     // ... otherwise show the HUD immediately
@@ -208,8 +233,19 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 
 #pragma mark - Internal show & hide operations
 
+/* lzy注170819：补充、提取重点
+ 1、移除之前添加到相关layer的动画
+ 2、使得定时器失效，来取消本实例任何handleHideTimer计划中的hideAnimated:方法
+ 3、记录展示开始时间、HUD的alpha置为1，则HUD出现，之前初始化的时候是0
+ 4、HUD有可能是『确定进度的类型』，处理CADisplayLink
+ 5、根据是否做动画出现的标识，处理动画出现相关事宜
+ */
 - (void)showUsingAnimation:(BOOL)animated {
     // Cancel any previous animations
+    /* lzy注170819：补充、提取重点
+     Remove all animations attached to the layer.
+     Availability	iOS (2.0 and later), macOS (10.5 and later), tvOS (9.0 and later)
+     */
     [self.bezelView.layer removeAllAnimations];
     [self.backgroundView.layer removeAllAnimations];
 
@@ -246,7 +282,9 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
         [self done];
     }
 }
-
+/* lzy注170819：补充、提取重点
+ 1、HUD做动画出现，需要调用此方法
+ */
 - (void)animateIn:(BOOL)animatingIn withType:(MBProgressHUDAnimation)type completion:(void(^)(BOOL finished))completion {
     // Automatically determine the correct zoom animation type
     if (type == MBProgressHUDAnimationZoom) {
@@ -331,6 +369,9 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     [self addSubview:bezelView];
     _bezelView = bezelView;
     [self updateBezelMotionEffects];
+    /* lzy注170819：补充、提取重点
+     以上两层view都是加到self了。
+     */
 
     UILabel *label = [UILabel new];
     label.adjustsFontSizeToFitWidth = NO;
@@ -356,13 +397,42 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     button.titleLabel.font = [UIFont boldSystemFontOfSize:MBDefaultDetailsLabelFontSize];
     [button setTitleColor:defaultColor forState:UIControlStateNormal];
     _button = button;
-
+//     下面的视图没有加。
     for (UIView *view in @[label, detailsLabel, button]) {
+        /* lzy注170819：补充、提取重点
+         A Boolean value that determines whether the view’s autoresizing mask is translated into Auto Layout constraints.
+         If this property’s value is YES, the system creates a set of constraints that duplicate the behavior specified by the view’s autoresizing mask. This also lets you modify the view’s size and location using the view’s frame, bounds, or center properties, allowing you to create a static, frame-based layout within Auto Layout.
+         Note that the autoresizing mask constraints fully specify the view’s size and position; therefore, you cannot add additional constraints to modify this size or position without introducing conflicts. If you want to use Auto Layout to dynamically calculate the size and position of your view, you must set this property to NO, and then provide a non ambiguous, nonconflicting set of constraints for the view.
+         By default, the property is set to YES for any view you programmatically create. If you add views in Interface Builder, the system automatically sets this property to NO.
+         Availability	iOS (6.0 and later), tvOS (6.0 and later)
+         为了使用AutoLayout，设置为NO
+         */
         view.translatesAutoresizingMaskIntoConstraints = NO;
+        
+        /* lzy注170819：补充、提取重点
+         Sets the priority with which a view resists being made smaller than its intrinsic size.
+         Custom views should set default values for both orientations on creation, based on their content, typically to UILayoutPriorityDefaultLow or UILayoutPriorityDefaultHigh. When creating user interfaces, the layout designer can modify these priorities for specific views when the overall layout design requires different tradeoffs than the natural priorities of the views being used in the interface.
+         Subclasses should not override this method.
+         Parameters
+         priority
+         The new priority.
+         axis
+         The axis for which the compression resistance priority should be set.
+         Availability	iOS (6.0 and later), tvOS (6.0 and later)
+         
+         typedef float UILayoutPriority;
+         static const UILayoutPriority UILayoutPriorityRequired NS_AVAILABLE_IOS(6_0) = 1000; // A required constraint.  Do not exceed this.
+         static const UILayoutPriority UILayoutPriorityDefaultHigh NS_AVAILABLE_IOS(6_0) = 750; // This is the priority level with which a button resists compressing its content.
+         static const UILayoutPriority UILayoutPriorityDefaultLow NS_AVAILABLE_IOS(6_0) = 250; // This is the priority level at which a button hugs its contents horizontally.
+         static const UILayoutPriority UILayoutPriorityFittingSizeLevel NS_AVAILABLE_IOS(6_0) = 50; // When you send -[UIView systemLayoutSizeFittingSize:], the size fitting most closely to the target size (the argument) is computed.  UILayoutPriorityFittingSizeLevel is the priority level with which the view wants to conform to the target size in that computation.  It's quite low.  It is generally not appropriate to make a constraint at exactly this priority.  You want to be higher or lower.
+         
+         */
         [view setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisHorizontal];
         [view setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
         [bezelView addSubview:view];
     }
+    
+    // 上线间距view
 
     UIView *topSpacer = [UIView new];
     topSpacer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -385,6 +455,10 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     MBProgressHUDMode mode = self.mode;
     if (mode == MBProgressHUDModeIndeterminate) {
         if (!isActivityIndicator) {
+            /* lzy注170819：补充、提取重点
+            目前模式是 指示器转圈对应UIActivityIndicatorView ，但是指示器不是的处理。
+             */
+            
             // Update to indeterminate indicator
             [indicator removeFromSuperview];
             indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -399,13 +473,13 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
         [self.bezelView addSubview:indicator];
     }
     else if (mode == MBProgressHUDModeDeterminate || mode == MBProgressHUDModeAnnularDeterminate) {
-        if (!isRoundIndicator) {
+        if (!isRoundIndicator) {// 决定视图是哪个
             // Update to determinante indicator
             [indicator removeFromSuperview];
             indicator = [[MBRoundProgressView alloc] init];
             [self.bezelView addSubview:indicator];
         }
-        if (mode == MBProgressHUDModeAnnularDeterminate) {
+        if (mode == MBProgressHUDModeAnnularDeterminate) {// 决定视图的样式
             [(MBRoundProgressView *)indicator setAnnular:YES];
         }
     } 
@@ -419,6 +493,8 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
         [indicator removeFromSuperview];
         indicator = nil;
     }
+    
+    // 需要使用AutoLayout
     indicator.translatesAutoresizingMaskIntoConstraints = NO;
     self.indicator = indicator;
 
@@ -428,7 +504,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 
     [indicator setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisHorizontal];
     [indicator setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
-
+// 确定了视图后，确定视图的样式
     [self updateViewsForColor:self.contentColor];
     [self setNeedsUpdateConstraints];
 }

@@ -327,6 +327,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * A label that holds an optional details message displayed below the labelText message. The details text can span multiple lines.
  */
+/* lzy注170819：补充、提取重点
+ 详情label可以是多行的。
+ */
 @property (strong, nonatomic, readonly) UILabel *detailsLabel;
 
 /**
