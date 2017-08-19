@@ -54,13 +54,17 @@
       @[[MBExample exampleWithTitle:@"Indeterminate mode" selector:@selector(indeterminateExample)],
         [MBExample exampleWithTitle:@"With label" selector:@selector(labelExample)],
         [MBExample exampleWithTitle:@"With details label" selector:@selector(detailsLabelExample)]],
+      
       @[[MBExample exampleWithTitle:@"Determinate mode" selector:@selector(determinateExample)],
+        // 环形的
         [MBExample exampleWithTitle:@"Annular determinate mode" selector:@selector(annularDeterminateExample)],
         [MBExample exampleWithTitle:@"Bar determinate mode" selector:@selector(barDeterminateExample)]],
+      
       @[[MBExample exampleWithTitle:@"Text only" selector:@selector(textExample)],
         [MBExample exampleWithTitle:@"Custom view" selector:@selector(customViewExample)],
         [MBExample exampleWithTitle:@"With action button" selector:@selector(cancelationExample)],
         [MBExample exampleWithTitle:@"Mode switching" selector:@selector(modeSwitchingExample)]],
+      
       @[[MBExample exampleWithTitle:@"On window" selector:@selector(indeterminateExample)],
         [MBExample exampleWithTitle:@"NSURLSession" selector:@selector(networkingExample)],
         [MBExample exampleWithTitle:@"Determinate with NSProgress" selector:@selector(determinateNSProgressExample)],
@@ -71,6 +75,7 @@
 
 #pragma mark - Examples
 
+#pragma mark - ================== 1 ==================
 - (void)indeterminateExample {
     // Show the HUD on the root view (self.view is a scrollable table view and thus not suitable,
     // as the HUD would move with the content as we scroll).
@@ -184,20 +189,7 @@
     });
 }
 
-- (void)windowExample {
-    /* lzy注170818：
-     覆盖整个屏幕。与添加到根视图上的使用方法类似。
-     这里showHUDAddedTo传入的参数是self.view.window
-     */
-    // Covers the entire screen. Similar to using the root view controller view.
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view.window animated:YES];
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        [self doSomeWork];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [hud hideAnimated:YES];
-        });
-    });
-}
+#pragma mark - ================== 2 ==================
 
 - (void)determinateExample {
     // self.navigationController.view
@@ -225,37 +217,13 @@
     });
 }
 
-- (void)determinateNSProgressExample {
-	MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-	
-	// Set the determinate mode to show task progress.
-	hud.mode = MBProgressHUDModeDeterminate;
-	hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");
-
-	// Set up NSProgress
-	NSProgress *progressObject = [NSProgress progressWithTotalUnitCount:100];
-	hud.progressObject = progressObject;
-
-	// Configure a cancel button.
-	[hud.button setTitle:NSLocalizedString(@"Cancel", @"HUD cancel button title") forState:UIControlStateNormal];
-	[hud.button addTarget:progressObject action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
-
-	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		// Do something useful in the background and update the HUD periodically.
-		[self doSomeWorkWithProgressObject:progressObject];
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[hud hideAnimated:YES];
-		});
-	});
-}
-
 - (void)annularDeterminateExample {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-
+    
     // Set the annular determinate mode to show task progress.
     hud.mode = MBProgressHUDModeAnnularDeterminate;
     hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");
-
+    
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         // Do something useful in the background and update the HUD periodically.
         [self doSomeWorkWithProgress];
@@ -265,13 +233,14 @@
     });
 }
 
+
 - (void)barDeterminateExample {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-
+    
     // Set the bar determinate mode to show task progress.
     hud.mode = MBProgressHUDModeDeterminateHorizontalBar;
     hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");
-
+    
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         // Do something useful in the background and update the HUD periodically.
         [self doSomeWorkWithProgress];
@@ -279,11 +248,31 @@
             [hud hideAnimated:YES];
         });
     });
+}
+
+
+
+
+#pragma mark - ================== 3 ==================
+
+- (void)textExample {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+    
+    // Set the text mode to show only text.
+    hud.mode = MBProgressHUDModeText;
+    hud.label.text = NSLocalizedString(@"Message here!", @"HUD message title");
+    // Move to bottm center.
+    /* lzy注170818：
+     The bezel offset relative to the center of the view. You can use MBProgressMaxOffset and -MBProgressMaxOffset to move the HUD all the way to the screen edge in each direction. E.g., CGPointMake(0.f, MBProgressMaxOffset) would position the HUD centered on the bottom edge.
+     */
+    hud.offset = CGPointMake(0.f, MBProgressMaxOffset);
+    
+    [hud hideAnimated:YES afterDelay:3.f];
 }
 
 - (void)customViewExample {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-
+    
     // Set the custom view mode to show any view.
     hud.mode = MBProgressHUDModeCustomView;
     // Set an image view with a checkmark.
@@ -293,19 +282,7 @@
     hud.square = YES;
     // Optional label text.
     hud.label.text = NSLocalizedString(@"Done", @"HUD done title");
-
-    [hud hideAnimated:YES afterDelay:3.f];
-}
-
-- (void)textExample {
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-
-    // Set the text mode to show only text.
-    hud.mode = MBProgressHUDModeText;
-    hud.label.text = NSLocalizedString(@"Message here!", @"HUD message title");
-    // Move to bottm center.
-    hud.offset = CGPointMake(0.f, MBProgressMaxOffset);
-
+    
     [hud hideAnimated:YES afterDelay:3.f];
 }
 
@@ -329,14 +306,16 @@
     });
 }
 
+
+
 - (void)modeSwitchingExample {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-
+    
     // Set some text to show the initial status.
     hud.label.text = NSLocalizedString(@"Preparing...", @"HUD preparing title");
     // Will look best, if we set a minimum size.
     hud.minSize = CGSizeMake(150.f, 100.f);
-
+    
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         // Do something useful in the background and update the HUD periodically.
         [self doSomeWorkWithMixedProgress];
@@ -346,16 +325,59 @@
     });
 }
 
+#pragma mark - ================== 4 ==================
+- (void)windowExample {
+    /* lzy注170818：
+     覆盖整个屏幕。与添加到根视图上的使用方法类似。
+     这里showHUDAddedTo传入的参数是self.view.window
+     */
+    // Covers the entire screen. Similar to using the root view controller view.
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view.window animated:YES];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        [self doSomeWork];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [hud hideAnimated:YES];
+        });
+    });
+}
+
+
 - (void)networkingExample {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-
+    
     // Set some text to show the initial status.
     hud.label.text = NSLocalizedString(@"Preparing...", @"HUD preparing title");
     // Will look best, if we set a minimum size.
     hud.minSize = CGSizeMake(150.f, 100.f);
-
+    
     [self doSomeNetworkWorkWithProgress];
 }
+
+
+- (void)determinateNSProgressExample {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+    
+    // Set the determinate mode to show task progress.
+    hud.mode = MBProgressHUDModeDeterminate;
+    hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");
+    
+    // Set up NSProgress
+    NSProgress *progressObject = [NSProgress progressWithTotalUnitCount:100];
+    hud.progressObject = progressObject;
+    
+    // Configure a cancel button.
+    [hud.button setTitle:NSLocalizedString(@"Cancel", @"HUD cancel button title") forState:UIControlStateNormal];
+    [hud.button addTarget:progressObject action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
+    
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        // Do something useful in the background and update the HUD periodically.
+        [self doSomeWorkWithProgressObject:progressObject];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [hud hideAnimated:YES];
+        });
+    });
+}
+
 
 - (void)dimBackgroundExample {
 	MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
@@ -541,5 +563,4 @@
         hud.progress = progress;
     });
 }
-
 @end
