@@ -198,8 +198,8 @@
     // Set the determinate(确定的、清楚的) mode to show task progress.
     /* lzy注170818：
      hud原来有mode这个属性，是个枚举。
-     
-     Indeterminate不确定的
+     determinate 确定的
+     indeterminate不确定的
      MBProgressHUD operation mode. The default is MBProgressHUDModeIndeterminate.
      
      MBProgressHUDModeDeterminate： A round, pie-chart like, progress view.
@@ -265,7 +265,8 @@
     /* lzy注170818：
      The bezel offset relative to the center of the view. You can use MBProgressMaxOffset and -MBProgressMaxOffset to move the HUD all the way to the screen edge in each direction. E.g., CGPointMake(0.f, MBProgressMaxOffset) would position the HUD centered on the bottom edge.
      */
-    hud.offset = CGPointMake(0.f, MBProgressMaxOffset);
+    // 上部显示
+    hud.offset = CGPointMake(0.f, -MBProgressMaxOffset);// 下部(0.f, MBProgressMaxOffset)
     
     [hud hideAnimated:YES afterDelay:3.f];
 }
@@ -277,8 +278,15 @@
     hud.mode = MBProgressHUDModeCustomView;
     // Set an image view with a checkmark.
     UIImage *image = [[UIImage imageNamed:@"Checkmark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    /* lzy注170819：
+     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
+     */
     hud.customView = [[UIImageView alloc] initWithImage:image];
+    
     // Looks a bit nicer if we make it square.
+    /* lzy注170819：
+     Force the HUD dimensions to be equal if possible.
+     */
     hud.square = YES;
     // Optional label text.
     hud.label.text = NSLocalizedString(@"Done", @"HUD done title");
@@ -290,12 +298,12 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
 
     // Set the determinate mode to show task progress.
-    hud.mode = MBProgressHUDModeDeterminate;
-    hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");
+    hud.mode = MBProgressHUDModeDeterminate;//MBProgressHUD operation mode. The default is MBProgressHUDModeIndeterminate.
+    hud.label.text = NSLocalizedString(@"Loading...", @"HUD loading title");// A label that holds an optional short message to be displayed below the activity indicator. The HUD is automatically resized to fit the entire text.
 
-    // Configure the button.
+    // Configure the button.A button that is placed below the labels. Visible only if a target / action is added.
     [hud.button setTitle:NSLocalizedString(@"Cancel", @"HUD cancel button title") forState:UIControlStateNormal];
-    [hud.button addTarget:self action:@selector(cancelWork:) forControlEvents:UIControlEventTouchUpInside];
+    [hud.button addTarget:self action:@selector(cancelWork:) forControlEvents:UIControlEventTouchUpInside];//
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         // Do something useful in the background and update the HUD periodically.
@@ -313,7 +321,7 @@
     
     // Set some text to show the initial status.
     hud.label.text = NSLocalizedString(@"Preparing...", @"HUD preparing title");
-    // Will look best, if we set a minimum size.
+    // Will look best, if we set a minimum size.The minimum size of the HUD bezel. Defaults to CGSizeZero (no minimum size).
     hud.minSize = CGSizeMake(150.f, 100.f);
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
@@ -363,10 +371,18 @@
     
     // Set up NSProgress
     NSProgress *progressObject = [NSProgress progressWithTotalUnitCount:100];
+    /* lzy注170819：
+     The NSProgress object feeding the progress information to the progress indicator.
+     */
     hud.progressObject = progressObject;
     
     // Configure a cancel button.
     [hud.button setTitle:NSLocalizedString(@"Cancel", @"HUD cancel button title") forState:UIControlStateNormal];
+    
+    /* lzy注170819：
+     终于看到按钮addTarget不是self的了。
+     这句表示，按钮点击被触发后，去progressObject类找方法cancel
+     */
     [hud.button addTarget:progressObject action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
@@ -383,6 +399,15 @@
 	MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
 
 	// Change the background view style and color.
+    /* lzy注170819：
+     The background style. Defaults to MBProgressHUDBackgroundStyleBlur on iOS 7 or later and MBProgressHUDBackgroundStyleSolidColor otherwise.
+     Note
+     Due to iOS 7 not supporting UIVisualEffectView, the blur effect differs slightly between iOS 7 and later versions.
+     
+     The background color or the blur tint color.
+     Note
+     Due to iOS 7 not supporting UIVisualEffectView, the blur effect differs slightly between iOS 7 and later versions.
+     */
 	hud.backgroundView.style = MBProgressHUDBackgroundStyleSolidColor;
 	hud.backgroundView.color = [UIColor colorWithWhite:0.f alpha:0.1f];
 
@@ -396,6 +421,10 @@
 
 - (void)colorExample {
 	MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+    
+    /* lzy注170819：
+     A color that gets forwarded to all labels and supported indicators. Also sets the tintColor for custom views on iOS 7+. Set to nil to manage color individually. Defaults to semi-translucent black on iOS 7 and later and white on earlier iOS versions.
+     */
 	hud.contentColor = [UIColor colorWithRed:0.f green:0.6f blue:0.7f alpha:1.f];
 
 	// Set the label text.
@@ -437,7 +466,8 @@
             // Instead we could have also passed a reference to the HUD
             // to the HUD to myProgressTask as a method parameter.
             /* lzy注170818：
-             使用类方法，获取对应的视图中的hud实例
+             使用类方法，获取对应的视图中的hud实例。
+             Finds the top-most HUD subview that hasn't finished and returns it.
              */
             [MBProgressHUD HUDForView:self.navigationController.view].progress = progress;
         });
