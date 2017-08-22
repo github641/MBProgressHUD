@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 /* lzy注170819：补充、提取重点
  1、Apple有一个私有的类 UIProgressHUD，本类和苹果私有类提供了差不多的功能
- 2、默认MBHUD阻断了所有的用户交互，可以通过设置hud.userInteractionEnabled = NO来启用交互。
+ 2、默认MBHUD阻断了所有的与HUD下方视图的用户交互，可以通过设置hud.userInteractionEnabled = NO来启用交互。
  3、MBProgressHUD是个视图，所以对它的操作务必在主线程
  */
 @interface MBProgressHUD : UIView
@@ -433,6 +433,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MBProgressHUD (Deprecated)
 
+
+/* lzy注170821
+ 这是之前版本废弃的方法，为了兼容，写了一个当前类MBProgressHUD的分类，把之前如何创建HUD的代码放到了这里。
+ */
 + (NSArray *)allHUDsForView:(UIView *)view __attribute__((deprecated("Store references when using more than one HUD per view.")));
 + (NSUInteger)hideAllHUDsForView:(UIView *)view animated:(BOOL)animated __attribute__((deprecated("Store references when using more than one HUD per view.")));
 

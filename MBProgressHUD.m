@@ -89,7 +89,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 
 + (MBProgressHUD *)HUDForView:(UIView *)view {
     /* lzy注170819：补充、提取重点
-     Returns an enumerator object that lets you access each object in the array, in reverse order.
+     Returns an enumerator object that lets you access each object in the array, in reverse order（逆序）.
      When you use this method with mutable subclasses of NSArray, you must not modify the array during enumeration.
      It is more efficient to use the fast enumeration protocol (see NSFastEnumeration). Fast enumeration is available in macOS 10.5 and later and iOS 2.0 and later.
      Returns
@@ -253,7 +253,8 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     [self.hideDelayTimer invalidate];
     
     /* lzy注170819：补充、提取重点
-     用在-hideAnimated:方法中，如果设置了『最短展示时间』，那么即使没达到最短时间就结束了还是会展示完，如果超过最短展示时间结束的，那么任务结束就结束了，直接hide就好了
+     
+     用在-hideAnimated:方法中，计算该方法调用时与showStarted的差值，如果设置了『最短展示时间』，那么即使没达到最短时间就结束了还是会展示完，如果超过最短展示时间结束的，那么任务结束就结束了，直接hide就好了
      */
     self.showStarted = [NSDate date];
     self.alpha = 1.f;
@@ -444,7 +445,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
         [bezelView addSubview:view];
     }
     
-    // 上线间距view
+    // 上下间距view
     
     UIView *topSpacer = [UIView new];
     topSpacer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -460,6 +461,10 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 }
 
 - (void)updateIndicators {
+    /* lzy注170821
+     让mode 与 view的类型对应。
+     并配置view的样式。
+     */
     UIView *indicator = self.indicator;
     BOOL isActivityIndicator = [indicator isKindOfClass:[UIActivityIndicatorView class]];
     BOOL isRoundIndicator = [indicator isKindOfClass:[MBRoundProgressView class]];
@@ -468,7 +473,7 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     if (mode == MBProgressHUDModeIndeterminate) {
         if (!isActivityIndicator) {
             /* lzy注170819：补充、提取重点
-             目前模式是 指示器转圈对应UIActivityIndicatorView ，但是指示器不是的处理。
+             目前模式是 MBProgressHUDModeIndeterminate，但是UIView *indicator不是UIActivityIndicatorView的处理。
              */
             
             // Update to indeterminate indicator
@@ -916,7 +921,10 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 
 
 @implementation MBRoundProgressView
-
+/* lzy注170821
+ 圈，是uiview的drawRect画出来的。
+ 每次setProgress，都重绘
+ */
 #pragma mark - Lifecycle
 
 - (id)init {
@@ -1305,7 +1313,9 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
 
 @end
 
-
+/* lzy注170821
+ 这是之前版本废弃的方法，为了兼容，写了一个当前类MBProgressHUD的分类，把之前如何创建HUD的代码放到了这里。
+ */
 @implementation MBProgressHUD (Deprecated)
 
 #pragma mark - Class
