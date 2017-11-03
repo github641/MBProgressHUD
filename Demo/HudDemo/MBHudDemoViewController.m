@@ -271,13 +271,35 @@
     [hud hideAnimated:YES afterDelay:3.f];
 }
 
+//- (void)customViewExample {
+//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+//
+//    // Set the custom view mode to show any view.
+//    hud.mode = MBProgressHUDModeCustomView;
+//    // Set an image view with a checkmark.
+//    UIImage *image = [[UIImage imageNamed:@"Checkmark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+//    /* lzy注170819：
+//     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
+//     */
+//    hud.customView = [[UIImageView alloc] initWithImage:image];
+//
+//    // Looks a bit nicer if we make it square.
+//    /* lzy注170819：
+//     Force the HUD dimensions to be equal if possible.
+//     */
+//    hud.square = YES;
+//    // Optional label text.
+//    hud.label.text = NSLocalizedString(@"Done", @"HUD done title");
+//
+//    [hud hideAnimated:YES afterDelay:3.f];
+//}
 - (void)customViewExample {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
     
     // Set the custom view mode to show any view.
     hud.mode = MBProgressHUDModeCustomView;
     // Set an image view with a checkmark.
-    UIImage *image = [[UIImage imageNamed:@"Checkmark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage *image = [[UIImage imageNamed:@"jb_up copy"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     /* lzy注170819：
      The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
      */
@@ -289,7 +311,7 @@
      */
     hud.square = YES;
     // Optional label text.
-    hud.label.text = NSLocalizedString(@"Done", @"HUD done title");
+    hud.label.text = @"恭喜获得10金币";
     
     [hud hideAnimated:YES afterDelay:3.f];
 }
