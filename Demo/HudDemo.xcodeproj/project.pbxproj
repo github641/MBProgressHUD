@@ -13,6 +13,7 @@
 		842425151FA471BB00ED8668 /* jb_up copy.png in Resources */ = {isa = PBXBuildFile; fileRef = 842425121FA471BA00ED8668 /* jb_up copy.png */; };
 		842425161FA471BB00ED8668 /* jb_up copy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 842425131FA471BB00ED8668 /* jb_up copy@2x.png */; };
 		842425171FA471BB00ED8668 /* jb_up copy@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 842425141FA471BB00ED8668 /* jb_up copy@3x.png */; };
+		84DFDFD21FE7AEAC00584F30 /* LzyCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DFDFD11FE7AEAC00584F30 /* LzyCustomView.m */; };
 		D22F7D810F85241C00550BB3 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = D22F7D800F85241C00550BB3 /* MBProgressHUD.m */; };
 		D274948B1D3B74AA00ABEB66 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D274948A1D3B74AA00ABEB66 /* Images.xcassets */; };
 		D27F18451D3B5878009D7482 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D27F18441D3B5878009D7482 /* main.m */; };
@@ -48,6 +49,8 @@
 		842425121FA471BA00ED8668 /* jb_up copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "jb_up copy.png"; sourceTree = "<group>"; };
 		842425131FA471BB00ED8668 /* jb_up copy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "jb_up copy@2x.png"; sourceTree = "<group>"; };
 		842425141FA471BB00ED8668 /* jb_up copy@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "jb_up copy@3x.png"; sourceTree = "<group>"; };
+		84DFDFD01FE7AEAC00584F30 /* LzyCustomView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LzyCustomView.h; path = HudDemo/LzyCustomView.h; sourceTree = SOURCE_ROOT; };
+		84DFDFD11FE7AEAC00584F30 /* LzyCustomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = LzyCustomView.m; path = HudDemo/LzyCustomView.m; sourceTree = SOURCE_ROOT; };
 		D22F7D7F0F85241C00550BB3 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../MBProgressHUD.h; sourceTree = SOURCE_ROOT; };
 		D22F7D800F85241C00550BB3 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = ../MBProgressHUD.m; sourceTree = "<group>"; };
 		D274948A1D3B74AA00ABEB66 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -114,6 +117,8 @@
 				D27F18581D3B5DFF009D7482 /* MBHudDemoAppDelegate.m */,
 				D27F18571D3B5DFF009D7482 /* MBHudDemoViewController.h */,
 				D27F18591D3B5DFF009D7482 /* MBHudDemoViewController.m */,
+				84DFDFD01FE7AEAC00584F30 /* LzyCustomView.h */,
+				84DFDFD11FE7AEAC00584F30 /* LzyCustomView.m */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 			);
@@ -368,6 +373,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84DFDFD21FE7AEAC00584F30 /* LzyCustomView.m in Sources */,
 				D27F185B1D3B5DFF009D7482 /* MBHudDemoViewController.m in Sources */,
 				D22F7D810F85241C00550BB3 /* MBProgressHUD.m in Sources */,
 				D27F185E1D3B5E0D009D7482 /* main.m in Sources */,

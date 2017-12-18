@@ -9,6 +9,7 @@
 #import "MBHudDemoViewController.h"
 #import "MBProgressHUD.h"
 #import <QuartzCore/QuartzCore.h>
+#import "LzyCustomView.h"
 
 @interface MBExample : NSObject
 
@@ -61,7 +62,7 @@
         [MBExample exampleWithTitle:@"Bar determinate mode" selector:@selector(barDeterminateExample)]],
       
       @[[MBExample exampleWithTitle:@"Text only" selector:@selector(textExample)],
-        [MBExample exampleWithTitle:@"Custom view" selector:@selector(customViewExample)],
+        [MBExample exampleWithTitle:@"Custom view" selector:@selector(customViewExample2)],
         [MBExample exampleWithTitle:@"With action button" selector:@selector(cancelationExample)],
         [MBExample exampleWithTitle:@"Mode switching" selector:@selector(modeSwitchingExample)]],
       
@@ -293,7 +294,30 @@
 //
 //    [hud hideAnimated:YES afterDelay:3.f];
 //}
-- (void)customViewExample {
+//- (void)customViewExample1 {
+//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+//
+//    // Set the custom view mode to show any view.
+//    hud.mode = MBProgressHUDModeCustomView;
+//    // Set an image view with a checkmark.
+//    UIImage *image = [[UIImage imageNamed:@"jb_up copy"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+//    /* lzy注170819：
+//     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
+//     */
+//    hud.customView = [[UIImageView alloc] initWithImage:image];
+//
+//    // Looks a bit nicer if we make it square.
+//    /* lzy注170819：
+//     Force the HUD dimensions to be equal if possible.
+//     */
+//    hud.square = YES;
+//    // Optional label text.
+//    hud.label.text = @"恭喜获得10金币";
+//
+//    [hud hideAnimated:YES afterDelay:3.f];
+//}
+
+- (void)customViewExample2 {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
     
     // Set the custom view mode to show any view.
@@ -303,16 +327,43 @@
     /* lzy注170819：
      The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
      */
-    hud.customView = [[UIImageView alloc] initWithImage:image];
+    
+    CGFloat customViewW = 280 * 0.7;
+    CGFloat customViewH = 100 * 0.5;
+    CGFloat ivH = 46;
+    CGFloat padding = 8;
+    /* lzy171218注:
+     作者写demo时注释了，传入的view必须实现- intrinsicContentSize方法
+     */
+    LzyCustomView *hudCustomV = [[LzyCustomView alloc] initWithFrame:CGRectMake(0, 0, customViewW, customViewH)];
+//    hudCustomV.backgroundColor = [UIColor redColor];
+    UIImageView *iv = [[UIImageView alloc] initWithFrame:CGRectMake(58/280/customViewW, (customViewH - ivH) * 0.5, ivH, ivH)];
+    [hudCustomV addSubview:iv];
+    iv.image = image;
+
+    UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(iv.frame) + padding, (customViewH - 24) * 0.5, customViewW - CGRectGetMaxX(iv.frame) - 2 * padding, 24)];
+    [hudCustomV addSubview:textLabel];
+
+    textLabel.text = @"恭喜获得10金币";
+    textLabel.textColor = [UIColor colorWithRed:255.0 / 255.0  green:254.0 / 255.0  blue:137.0 / 255.0 alpha:1];
+    textLabel.font = [UIFont systemFontOfSize:16];
+    
+    hud.customView = hudCustomV;
     
     // Looks a bit nicer if we make it square.
     /* lzy注170819：
      Force the HUD dimensions to be equal if possible.
      */
-    hud.square = YES;
-    // Optional label text.
-    hud.label.text = @"恭喜获得10金币";
+//    hud.square = YES;
+//    // Optional label text.
+//    hud.label.text = @"恭喜获得10金币";
+    /* lzy171218注:
+     背景样式见MBProgressHUD.m line1270
+     */
+//    hud.bezelView.backgroundColor = [UIColor colorWithRed:0.0 / 255.0  green:0.0 / 255.0  blue:0.0 / 255.0 alpha:0.79];
     
+    hud.backgroundView.style = MBProgressHUDBackgroundStyleSolidColor;
+    hud.backgroundView.color = [UIColor colorWithWhite:0.f alpha:0.1f];
     [hud hideAnimated:YES afterDelay:3.f];
 }
 

@@ -1258,8 +1258,17 @@ static const CGFloat MBDefaultDetailsLabelFontSize = 12.f;
     if (style == MBProgressHUDBackgroundStyleBlur) {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000 || TARGET_OS_TV
         if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_8_0) {
+            // 原本的base
             UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
             UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+
+            // 搜索sdk 奖励弹窗 法一
+//            UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+//            UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+
+            // 搜索sdk 奖励弹窗 法二，结合设置hud.bezelView.backgroundColor = [UIColor colorWithRed:0.0 / 255.0  green:0.0 / 255.0  blue:0.0 / 255.0 alpha:0.79];
+//            UIVisualEffectView *effectView = [[UIVisualEffectView alloc] init];
+            
             [self addSubview:effectView];
             effectView.frame = self.bounds;
             effectView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
