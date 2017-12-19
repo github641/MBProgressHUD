@@ -9,7 +9,9 @@
 #import "MBHudDemoViewController.h"
 #import "MBProgressHUD.h"
 #import <QuartzCore/QuartzCore.h>
-#import "LzyCustomView.h"
+#import "LzySearchSdkRewardHud.h"
+#import "LzyTaotoutiao_ydtcHud.h"
+#import "LzyTaotoutiao_qdHud.h"
 
 @interface MBExample : NSObject
 
@@ -62,7 +64,7 @@
         [MBExample exampleWithTitle:@"Bar determinate mode" selector:@selector(barDeterminateExample)]],
       
       @[[MBExample exampleWithTitle:@"Text only" selector:@selector(textExample)],
-        [MBExample exampleWithTitle:@"Custom view" selector:@selector(customViewExample2)],
+        [MBExample exampleWithTitle:@"Custom view" selector:@selector(customViewExample3)],
         [MBExample exampleWithTitle:@"With action button" selector:@selector(cancelationExample)],
         [MBExample exampleWithTitle:@"Mode switching" selector:@selector(modeSwitchingExample)]],
       
@@ -271,52 +273,59 @@
     
     [hud hideAnimated:YES afterDelay:3.f];
 }
+/* lzy171218注:
+ demo例子
+ */
+- (void)customViewExample {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
 
-//- (void)customViewExample {
-//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-//
-//    // Set the custom view mode to show any view.
-//    hud.mode = MBProgressHUDModeCustomView;
-//    // Set an image view with a checkmark.
-//    UIImage *image = [[UIImage imageNamed:@"Checkmark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-//    /* lzy注170819：
-//     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
-//     */
-//    hud.customView = [[UIImageView alloc] initWithImage:image];
-//
-//    // Looks a bit nicer if we make it square.
-//    /* lzy注170819：
-//     Force the HUD dimensions to be equal if possible.
-//     */
-//    hud.square = YES;
-//    // Optional label text.
-//    hud.label.text = NSLocalizedString(@"Done", @"HUD done title");
-//
-//    [hud hideAnimated:YES afterDelay:3.f];
-//}
-//- (void)customViewExample1 {
-//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-//
-//    // Set the custom view mode to show any view.
-//    hud.mode = MBProgressHUDModeCustomView;
-//    // Set an image view with a checkmark.
-//    UIImage *image = [[UIImage imageNamed:@"jb_up copy"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-//    /* lzy注170819：
-//     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
-//     */
-//    hud.customView = [[UIImageView alloc] initWithImage:image];
-//
-//    // Looks a bit nicer if we make it square.
-//    /* lzy注170819：
-//     Force the HUD dimensions to be equal if possible.
-//     */
-//    hud.square = YES;
-//    // Optional label text.
-//    hud.label.text = @"恭喜获得10金币";
-//
-//    [hud hideAnimated:YES afterDelay:3.f];
-//}
+    // Set the custom view mode to show any view.
+    hud.mode = MBProgressHUDModeCustomView;
+    // Set an image view with a checkmark.
+    UIImage *image = [[UIImage imageNamed:@"Checkmark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    /* lzy注170819：
+     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
+     */
+    hud.customView = [[UIImageView alloc] initWithImage:image];
 
+    // Looks a bit nicer if we make it square.
+    /* lzy注170819：
+     Force the HUD dimensions to be equal if possible.
+     */
+    hud.square = YES;
+    // Optional label text.
+    hud.label.text = NSLocalizedString(@"Done", @"HUD done title");
+
+    [hud hideAnimated:YES afterDelay:3.f];
+}
+/* lzy171218注:
+ 搜索sdk奖励弹窗版本1
+ */
+- (void)customViewExample1 {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+
+    // Set the custom view mode to show any view.
+    hud.mode = MBProgressHUDModeCustomView;
+    // Set an image view with a checkmark.
+    UIImage *image = [[UIImage imageNamed:@"jb_up copy"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    /* lzy注170819：
+     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
+     */
+    hud.customView = [[UIImageView alloc] initWithImage:image];
+
+    // Looks a bit nicer if we make it square.
+    /* lzy注170819：
+     Force the HUD dimensions to be equal if possible.
+     */
+    hud.square = YES;
+    // Optional label text.
+    hud.label.text = @"恭喜获得10金币";
+
+    [hud hideAnimated:YES afterDelay:3.f];
+}
+/* lzy171218注:
+ 搜索sdk奖励弹窗，设计图版本
+ */
 - (void)customViewExample2 {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
     
@@ -335,7 +344,7 @@
     /* lzy171218注:
      作者写demo时注释了，传入的view必须实现- intrinsicContentSize方法
      */
-    LzyCustomView *hudCustomV = [[LzyCustomView alloc] initWithFrame:CGRectMake(0, 0, customViewW, customViewH)];
+    LzySearchSdkRewardHud *hudCustomV = [[LzySearchSdkRewardHud alloc] initWithFrame:CGRectMake(0, 0, customViewW, customViewH)];
 //    hudCustomV.backgroundColor = [UIColor redColor];
     UIImageView *iv = [[UIImageView alloc] initWithFrame:CGRectMake(58/280/customViewW, (customViewH - ivH) * 0.5, ivH, ivH)];
     [hudCustomV addSubview:iv];
@@ -366,6 +375,54 @@
     hud.backgroundView.color = [UIColor colorWithWhite:0.f alpha:0.1f];
     [hud hideAnimated:YES afterDelay:3.f];
 }
+
+/* lzy171218注:
+ 淘头条的引导登录 的弹窗，尝试使用这个做一下
+ */
+- (void)customViewExample3 {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+    
+    // Set the custom view mode to show any view.
+    hud.mode = MBProgressHUDModeCustomView;
+    // Set an image view with a checkmark.
+    UIImage *image = [[UIImage imageNamed:@"hbyd"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    /* lzy注170819：
+     The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView. The view should implement intrinsicContentSize for proper sizing. For best results use approximately 37 by 37 pixels.
+     */
+
+    CGFloat padding = 8;
+    /* lzy171218注:
+     作者写demo时注释了，传入的view必须实现- intrinsicContentSize方法
+     */
+    LzyTaotoutiao_ydtcHud *hudCustomV = [[LzyTaotoutiao_ydtcHud alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
+    //    hudCustomV.backgroundColor = [UIColor redColor];
+    UIImageView *iv = [[UIImageView alloc] initWithFrame:hudCustomV.bounds];
+    [hudCustomV addSubview:iv];
+    iv.image = image;
+    
+// x
+    UIButton *xIv = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(hudCustomV.frame) - padding - 4 * padding, padding, 4 * padding, 4 * padding)];
+    [iv addSubview:xIv];
+    [xIv setBackgroundImage:[UIImage imageNamed:@"hbyd_close"] forState:UIControlStateNormal];
+    hud.customView = hudCustomV;
+    
+    // Looks a bit nicer if we make it square.
+    /* lzy注170819：
+     Force the HUD dimensions to be equal if possible.
+     */
+    //    hud.square = YES;
+    //    // Optional label text.
+    //    hud.label.text = @"恭喜获得10金币";
+    /* lzy171218注:
+     背景样式见MBProgressHUD.m line1270
+     */
+    //    hud.bezelView.backgroundColor = [UIColor colorWithRed:0.0 / 255.0  green:0.0 / 255.0  blue:0.0 / 255.0 alpha:0.79];
+    
+    hud.backgroundView.style = MBProgressHUDBackgroundStyleSolidColor;
+    hud.backgroundView.color = [UIColor colorWithWhite:0.f alpha:0.1f];
+    
+}
+
 
 - (void)cancelationExample {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
